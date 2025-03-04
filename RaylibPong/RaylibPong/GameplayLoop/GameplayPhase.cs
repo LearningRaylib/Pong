@@ -1,21 +1,40 @@
 ﻿using Raylib_cs;
+using System.Numerics;
 
 namespace RaylibPong.GameplayLoop;
 
 internal class GameplayPhase : IGamePhase
 {
-    private Settings settings;
+    Ball theBall;
+
+    Settings settings;
+    float rotation = 0f;
+    bool IsPause = false;
+    int frameCounter = 0;
+    Vector2 initialSpeed = new(5.0f, 4.0f);
 
     public GameplayPhase(Settings settings)
     {
         this.settings = settings;
+
+        theBall = new Ball(
+            settings.ScreenCenter,
+            initialSpeed
+        );
     }
 
     public void Draw()
     {
-        Raylib.DrawRectangle(0, 0, settings.Width, settings.Height, Color.Blue);
-        Raylib.DrawText("GAMEPLAY SCREEN", 20, 20, 40, Color.DarkBlue);
-        Raylib.DrawText("PRESS ENTER to JUMP to ENDING SCREEN", 290, 220, 20, Color.DarkBlue);
+        rotation += 0.2f;
+
+        Raylib.ClearBackground(Color.RayWhite);
+
+        theBall.Draw();
+
+        if (IsPause && (frameCounter / 30 % 2 == 0))
+            Raylib.DrawText("paused", 350, 200, 30, Color.Gray);
+
+        Raylib.DrawFPS(10, 10);
     }
 
     public void Unload()
@@ -24,9 +43,16 @@ internal class GameplayPhase : IGamePhase
 
     public void Update()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+        if (Raylib.IsKeyPressed(KeyboardKey.Space)) IsPause = !IsPause;
+
+        if (!IsPause)
         {
-            Program.currentScreen = GameScreen.ENDING;
+            // protagonist.Update();
+
+            if (theBall.IsCollidingWithScreenBorderX()) initialSpeed.X *= -1.0f;
+            if (theBall.IsCollidingWithScreenBorderY()) initialSpeed.Y *= -1.0f;
+
+            theBall.Update(initialSpeed);
         }
     }
 }
