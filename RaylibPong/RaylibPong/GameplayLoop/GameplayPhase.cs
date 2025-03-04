@@ -1,4 +1,6 @@
 ﻿using Raylib_cs;
+using RaylibPong.GameLogic;
+using RaylibPong.GameObjects;
 using System.Numerics;
 
 namespace RaylibPong.GameplayLoop;
@@ -6,12 +8,10 @@ namespace RaylibPong.GameplayLoop;
 internal class GameplayPhase : IGamePhase
 {
     Ball theBall;
+    Paddle playerPaddle;
 
     Settings settings;
-    float rotation = 0f;
     bool IsPause = false;
-    int frameCounter = 0;
-    Vector2 initialSpeed = new(5.0f, 4.0f);
 
     public GameplayPhase(Settings settings)
     {
@@ -19,19 +19,21 @@ internal class GameplayPhase : IGamePhase
 
         theBall = new Ball(
             settings.ScreenCenter,
-            initialSpeed
+            initialBallSpeed: new Vector2(5.0f, 4.0f)
+        );
+        playerPaddle = new Paddle(
+            new Vector2(10, settings.VerticalCenter)
         );
     }
 
     public void Draw()
     {
-        rotation += 0.2f;
-
         Raylib.ClearBackground(Color.RayWhite);
 
         theBall.Draw();
+        playerPaddle.Draw();
 
-        if (IsPause && (frameCounter / 30 % 2 == 0))
+        if (IsPause)
             Raylib.DrawText("paused", 350, 200, 30, Color.Gray);
 
         Raylib.DrawFPS(10, 10);
@@ -47,12 +49,13 @@ internal class GameplayPhase : IGamePhase
 
         if (!IsPause)
         {
-            // protagonist.Update();
+            if (theBall.IsCollidingWithScreenBorderX()) theBall.InvertHorizontalDirection();
+            if (theBall.IsCollidingWithScreenBorderY()) theBall.InvertVerticalDirection();
 
-            if (theBall.IsCollidingWithScreenBorderX()) initialSpeed.X *= -1.0f;
-            if (theBall.IsCollidingWithScreenBorderY()) initialSpeed.Y *= -1.0f;
+            if (Raylib.IsKeyDown(KeyboardKey.W)) playerPaddle.MoveVertically(-5.0f);
+            if (Raylib.IsKeyDown(KeyboardKey.S)) playerPaddle.MoveVertically(5.0f);
 
-            theBall.Update(initialSpeed);
+            theBall.Update();
         }
     }
 }

@@ -11,6 +11,9 @@ public class Settings
     public Vector2 ScreenCenter
         => new(Width / 2, Height / 2);
 
+    public int VerticalCenter
+        => Height / 2;
+
     public Screen Screen => new(Width, Height);
 }
 

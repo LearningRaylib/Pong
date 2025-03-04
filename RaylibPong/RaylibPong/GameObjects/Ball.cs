@@ -1,7 +1,8 @@
 ﻿using Raylib_cs;
+using RaylibPong.GameLogic;
 using System.Numerics;
 
-namespace RaylibPong;
+namespace RaylibPong.GameObjects;
 
 public interface IAmA2dBeing
 {
@@ -17,10 +18,10 @@ public class Ball : IAmA2dBeing
 
     Vector2 speed;
 
-    public Ball(Vector2 screenCenter, Vector2 speedVector)
+    public Ball(Vector2 screenCenter, Vector2 initialBallSpeed)
     {
         position = screenCenter;
-        speed = speedVector;
+        speed = initialBallSpeed;
     }
 
     public void Draw()
@@ -32,11 +33,14 @@ public class Ball : IAmA2dBeing
     public void MoveVertically(float newY)
         => position = position + new Vector2(0.0f, newY);
 
-    internal void Update(Vector2? newSpeed)
-    {
-        if (newSpeed.HasValue)
-            speed = newSpeed.Value;
+    public void InvertHorizontalDirection()
+        => speed.X *= -1.0f;
 
+    public void InvertVerticalDirection()
+        => speed.Y *= -1.0f;
+
+    internal void Update()
+    {
         position = position + speed;
     }
 }
