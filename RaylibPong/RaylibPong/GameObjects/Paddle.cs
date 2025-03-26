@@ -22,4 +22,7 @@ public class Paddle
         if (position.Y + v > 0 && position.Y + size.Y + v < Raylib.GetScreenHeight())
             position += new Vector2(0.0f, v);
     }
+
+    public Rectangle ToRectangle()
+        => new(position.X, position.Y, size.X, size.Y);
 }

@@ -17,14 +17,16 @@ internal class GameplayPhase : IGamePhase
     {
         this.settings = settings;
 
-        theBall = new Ball(
-            settings.ScreenCenter,
-            initialBallSpeed: new Vector2(5.0f, 4.0f)
-        );
+        theBall = InitBall();
         playerPaddle = new Paddle(
             new Vector2(10, settings.VerticalCenter)
         );
     }
+
+    private Ball InitBall() => new(
+            settings.ScreenCenter,
+            initialBallSpeed: new Vector2(-5.0f, -4.0f)
+        );
 
     public void Draw()
     {
@@ -49,8 +51,17 @@ internal class GameplayPhase : IGamePhase
 
         if (!IsPause)
         {
-            if (theBall.IsCollidingWithScreenBorderX()) theBall.InvertHorizontalDirection();
+            if (theBall.IsCollidingWithScreenBorderX())
+            {
+                // todo: point scored
+                theBall = InitBall();
+            }
             if (theBall.IsCollidingWithScreenBorderY()) theBall.InvertVerticalDirection();
+
+            if (theBall.IsCollidingWith(playerPaddle))
+            {
+                theBall.InvertHorizontalDirection();
+            }
 
             if (Raylib.IsKeyDown(KeyboardKey.W)) playerPaddle.MoveVertically(-5.0f);
             if (Raylib.IsKeyDown(KeyboardKey.S)) playerPaddle.MoveVertically(5.0f);
