@@ -8,7 +8,8 @@ namespace RaylibPong.GameplayLoop;
 internal class GameplayPhase : IGamePhase
 {
     Ball theBall;
-    Paddle playerPaddle;
+    Paddle player1Paddle;
+    Paddle player2Paddle;
 
     Settings settings;
     bool IsPause = false;
@@ -18,8 +19,11 @@ internal class GameplayPhase : IGamePhase
         this.settings = settings;
 
         theBall = InitBall();
-        playerPaddle = new Paddle(
+        player1Paddle = new Paddle(
             new Vector2(10, settings.VerticalCenter)
+        );
+        player2Paddle = new Paddle(
+            new Vector2(settings.Screen.Width - 40, settings.VerticalCenter)
         );
     }
 
@@ -33,7 +37,8 @@ internal class GameplayPhase : IGamePhase
         Raylib.ClearBackground(Color.RayWhite);
 
         theBall.Draw();
-        playerPaddle.Draw();
+        player1Paddle.Draw();
+        player2Paddle.Draw();
 
         if (IsPause)
             Raylib.DrawText("paused", 350, 200, 30, Color.Gray);
@@ -56,15 +61,17 @@ internal class GameplayPhase : IGamePhase
                 // todo: point scored
                 theBall = InitBall();
             }
-            if (theBall.IsCollidingWithScreenBorderY()) theBall.InvertVerticalDirection();
+            if (theBall.IsCollidingWithScreenBorderY())
+                theBall.InvertVerticalDirection();
 
-            if (theBall.IsCollidingWith(playerPaddle))
-            {
+            if (theBall.IsCollidingWith(player1Paddle) || 
+                theBall.IsCollidingWith(player2Paddle))
                 theBall.InvertHorizontalDirection();
-            }
 
-            if (Raylib.IsKeyDown(KeyboardKey.W)) playerPaddle.MoveVertically(-5.0f);
-            if (Raylib.IsKeyDown(KeyboardKey.S)) playerPaddle.MoveVertically(5.0f);
+            if (Raylib.IsKeyDown(KeyboardKey.W)) player1Paddle.MoveVertically(-5.0f);
+            if (Raylib.IsKeyDown(KeyboardKey.S)) player1Paddle.MoveVertically(5.0f);
+            if (Raylib.IsKeyDown(KeyboardKey.Up)) player2Paddle.MoveVertically(-5.0f);
+            if (Raylib.IsKeyDown(KeyboardKey.Down)) player2Paddle.MoveVertically(5.0f);
 
             theBall.Update();
         }

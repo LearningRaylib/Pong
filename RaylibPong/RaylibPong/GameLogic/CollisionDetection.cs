@@ -6,11 +6,11 @@ namespace RaylibPong.GameLogic;
 public static class CollisionDetection
 {
     public static bool IsCollidingWithScreenBorderX(this IAmA2dBeing being)
-        => being.position.X >= Raylib.GetScreenWidth() - being.radius || being.position.X <= being.radius;
+        => being.Position.X >= Raylib.GetScreenWidth() - being.Radius || being.Position.X <= being.Radius;
 
     public static bool IsCollidingWithScreenBorderY(this IAmA2dBeing being)
-        => being.position.Y >= Raylib.GetScreenHeight() - being.radius || being.position.Y <= being.radius;
+        => being.Position.Y >= Raylib.GetScreenHeight() - being.Radius || being.Position.Y <= being.Radius;
 
-    public static bool IsCollidingWith(this Ball theBall, Paddle paddle)
-        => Raylib.CheckCollisionCircleRec(theBall.position, theBall.radius, paddle.ToRectangle());
+    public static bool IsCollidingWith(this ICollideLikeACircle theBall, ICollideLikeARectangle paddle)
+        => Raylib.CheckCollisionCircleRec(theBall.Position, theBall.Radius, paddle.ToRectangle());
 }

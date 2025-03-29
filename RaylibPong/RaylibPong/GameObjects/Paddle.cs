@@ -4,10 +4,15 @@ using System.Numerics;
 
 namespace RaylibPong.GameObjects;
 
-public class Paddle 
+public interface ICollideLikeARectangle
+{
+    Rectangle ToRectangle();
+}
+
+public class Paddle : ICollideLikeARectangle
 {
     public Vector2 position { get; private set; }
-    public Vector2 size = new Vector2(50, 100);
+    public Vector2 size = new Vector2(20, 100);
 
     public Paddle(Vector2 screenCenter)
     {
