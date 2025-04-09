@@ -1,6 +1,5 @@
 ﻿using Raylib_cs;
 using RaylibPong.GameplayLoop;
-using RaylibPong.UI;
 
 namespace RaylibPong;
 
@@ -16,6 +15,8 @@ internal class Program
     private static IGamePhase? titlePhase;
     private static IGamePhase? endingPhase;
 
+    public static bool exitWindow = false;
+
     private static IGamePhase GetGamePhase(GameScreen currentScreen)
     {
         return currentScreen switch
@@ -27,6 +28,9 @@ internal class Program
         };
     }
 
+    public static void EndGame() 
+        => exitWindow = true;
+
     static void Main(string[] args)
     {
         Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint);
@@ -36,37 +40,18 @@ internal class Program
         Raylib.SetExitKey(KeyboardKey.Null);
         Raylib.SetTargetFPS(settings.TargetFPS);
 
-        bool exitWindowRequested = false;
-        bool exitWindow = false;
-
         IGamePhase currentGamePhase;
 
         // Main game loop
         while (!exitWindow)
         {
-            if (Raylib.WindowShouldClose() || Raylib.IsKeyPressed(KeyboardKey.Escape))
-                exitWindowRequested = true;
-
-            if (exitWindowRequested)
-            {
-                if (Raylib.IsKeyPressed(KeyboardKey.Y)) exitWindow = true;
-                else if (Raylib.IsKeyPressed(KeyboardKey.N)) exitWindowRequested = false;
-            }
-
             currentGamePhase = GetGamePhase(currentScreen);
 
             currentGamePhase.Update();
 
             Raylib.BeginDrawing();
 
-            if (exitWindowRequested)
-            {
-                ExitWindow.Draw(settings.Width);
-            }
-            else
-            {
-                currentGamePhase.Draw();
-            }
+            currentGamePhase.Draw();
 
             Raylib.EndDrawing();
         }

@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using RaylibPong.GameLogic;
 using RaylibPong.GameObjects;
+using RaylibPong.UI;
 using System.Numerics;
 
 namespace RaylibPong.GameplayLoop;
@@ -14,7 +15,7 @@ internal class GameplayPhase : IGamePhase
     int player2Score = 0;
 
     Settings settings;
-    bool IsPause = false;
+    bool exitWindowRequested = false;
 
     public GameplayPhase(Settings settings)
     {
@@ -36,17 +37,21 @@ internal class GameplayPhase : IGamePhase
 
     public void Draw()
     {
-        Raylib.ClearBackground(Color.RayWhite);
-        DrawCurrentScore();
+        if (exitWindowRequested)
+        {
+            ExitWindow.Draw(settings.Width);
+        }
+        else
+        {
+            Raylib.ClearBackground(Color.RayWhite);
+            DrawCurrentScore();
 
-        theBall.Draw();
-        player1Paddle.Draw();
-        player2Paddle.Draw();
+            theBall.Draw();
+            player1Paddle.Draw();
+            player2Paddle.Draw();
 
-        if (IsPause)
-            Raylib.DrawText("paused", 350, 200, 30, Color.Gray);
-
-        Raylib.DrawFPS(10, 10);
+            Raylib.DrawFPS(10, 10);
+        }
     }
 
     private void DrawCurrentScore()
@@ -61,9 +66,15 @@ internal class GameplayPhase : IGamePhase
 
     public void Update()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Space)) IsPause = !IsPause;
+        if (Raylib.WindowShouldClose() || Raylib.IsKeyPressed(KeyboardKey.Escape))
+            exitWindowRequested = true;
 
-        if (!IsPause)
+        if (exitWindowRequested)
+        {
+            if (Raylib.IsKeyPressed(KeyboardKey.Y)) Program.EndGame();
+            else if (Raylib.IsKeyPressed(KeyboardKey.N)) exitWindowRequested = false;
+        }
+        else
         {
             (bool isColliding, ScreenBorder border) = theBall.IsCollidingWithScreenBorderX();
             
