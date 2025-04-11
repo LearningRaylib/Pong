@@ -15,7 +15,7 @@ internal class Program
     private static IGamePhase? titlePhase;
     private static IGamePhase? endingPhase;
 
-    public static bool exitWindow = false;
+    private static bool exitWindow = false;
 
     private static IGamePhase GetGamePhase(GameScreen currentScreen)
     {
