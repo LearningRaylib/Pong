@@ -4,6 +4,8 @@ namespace RaylibPong.GameplayLoop;
 
 internal class EndingPhase : IGamePhase
 {
+    private int frameCounter = 0;
+
     private Settings settings;
 
     public EndingPhase(Settings settings)
@@ -24,9 +26,11 @@ internal class EndingPhase : IGamePhase
 
     public void Update()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+        frameCounter++;
+
+        if (frameCounter > 240)
         {
-            Program.currentScreen = GameScreen.TITLE;
+            Program.EndGame();
         }
     }
 }
