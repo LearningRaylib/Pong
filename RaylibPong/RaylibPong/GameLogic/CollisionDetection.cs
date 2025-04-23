@@ -13,7 +13,7 @@ public enum ScreenBorder
 
 public static class CollisionDetection
 {
-    public static (bool, ScreenBorder) IsCollidingWithScreenBorderX(this IAmA2dBeing being)
+    public static (bool, ScreenBorder) IsCollidingWithScreenBorderX(this ICollideLikeACircle being)
     {
         if (being.Position.X >= Raylib.GetScreenWidth() - being.Radius)
             return (true, ScreenBorder.Right);
@@ -25,10 +25,10 @@ public static class CollisionDetection
 
     }
 
-    //public static bool IsCollidingWithScreenBorderX(this IAmA2dBeing being)
+    //public static bool IsCollidingWithScreenBorderX(this ICollideLikeACircle being)
     //    => being.Position.X >= Raylib.GetScreenWidth() - being.Radius || being.Position.X <= being.Radius;
 
-    public static bool IsCollidingWithScreenBorderY(this IAmA2dBeing being)
+    public static bool IsCollidingWithScreenBorderY(this ICollideLikeACircle being)
         => being.Position.Y >= Raylib.GetScreenHeight() - being.Radius || being.Position.Y <= being.Radius;
 
     public static bool IsCollidingWith(this ICollideLikeACircle theBall, ICollideLikeARectangle paddle)
