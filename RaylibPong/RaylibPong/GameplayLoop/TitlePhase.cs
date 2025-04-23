@@ -26,7 +26,7 @@ internal class TitlePhase : IGamePhase
     {
         if (Raylib.IsKeyPressed(KeyboardKey.Enter))
         {
-            Program.currentScreen = GameScreen.GAMEPLAY;
+            Program.CurrentScreen = GameScreen.ENDING;
         }
     }
 }

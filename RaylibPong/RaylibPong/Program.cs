@@ -7,8 +7,10 @@ enum GameScreen { LOGO, TITLE, GAMEPLAY, ENDING };
 
 internal class Program
 {
-    public static GameScreen currentScreen { get; set; } = GameScreen.LOGO;
-    public static Settings settings = new();
+    public static GameScreen CurrentScreen { get; set; } = GameScreen.LOGO;
+    public static bool IsPaused { get; set; } = false;
+
+    private static Settings settings = new();
 
     private static IGamePhase? logoPhase;
     private static IGamePhase? gameplayPhase;
@@ -31,6 +33,9 @@ internal class Program
     public static void EndGame() 
         => exitWindow = true;
 
+    public static void NewGame()
+        => gameplayPhase = new GameplayPhase(settings);
+
     static void Main(string[] args)
     {
         Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint);
@@ -45,7 +50,7 @@ internal class Program
         // Main game loop
         while (!exitWindow)
         {
-            currentGamePhase = GetGamePhase(currentScreen);
+            currentGamePhase = GetGamePhase(CurrentScreen);
 
             currentGamePhase.Update();
 

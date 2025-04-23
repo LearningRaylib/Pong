@@ -17,7 +17,7 @@ internal class LogoPhase : IGamePhase
         frameCounter++;
         if (frameCounter > 120)
         {
-            Program.currentScreen = GameScreen.TITLE;
+            Program.CurrentScreen = GameScreen.TITLE;
         }
     }
 
