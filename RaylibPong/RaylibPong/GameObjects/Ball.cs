@@ -4,19 +4,13 @@ using System.Numerics;
 
 namespace RaylibPong.GameObjects;
 
-public interface IAmA2dBeing
-{
-    Vector2 Position { get; }
-    int Radius { get; }
-}
-
 public interface ICollideLikeACircle
 {
     Vector2 Position { get; }
     int Radius { get; }
 }
 
-public class Ball : IAmA2dBeing, ICollideLikeACircle
+public class Ball : ICollideLikeACircle
 {
     public Vector2 Position { get; private set; }
 

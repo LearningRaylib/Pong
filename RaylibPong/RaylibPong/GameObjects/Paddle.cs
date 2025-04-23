@@ -11,23 +11,30 @@ public interface ICollideLikeARectangle
 
 public class Paddle : ICollideLikeARectangle
 {
-    public Vector2 position { get; private set; }
-    public Vector2 size = new Vector2(20, 100);
+    public Vector2 Position { get; private set; }
+    public Vector2 Size = new(20, 100);
+    private float Speed = 5.0f;
 
     public Paddle(Vector2 screenCenter)
     {
-        position = screenCenter;
+        Position = screenCenter;
     }
 
     public void Draw()
-        => position.DrawRectangle(size, Color.Black);
+        => Position.DrawRectangle(Size, Color.Black);
 
-    public void MoveVertically(float v)
+    public void MoveUp()
+        => MoveVertically(-Speed);
+
+    public void MoveDown()
+        => MoveVertically(Speed);
+
+    private void MoveVertically(float v)
     {
-        if (position.Y + v > 0 && position.Y + size.Y + v < Raylib.GetScreenHeight())
-            position += new Vector2(0.0f, v);
+        if (Position.Y + v > 0 && Position.Y + Size.Y + v < Raylib.GetScreenHeight())
+            Position += new Vector2(0.0f, v);
     }
 
     public Rectangle ToRectangle()
-        => new(position.X, position.Y, size.X, size.Y);
+        => new(Position.X, Position.Y, Size.X, Size.Y);
 }
