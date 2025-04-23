@@ -1,7 +1,6 @@
 ﻿using Raylib_cs;
 using RaylibPong.GameLogic;
 using RaylibPong.GameObjects;
-using RaylibPong.UI;
 using System.Numerics;
 
 namespace RaylibPong.GameplayLoop;
@@ -15,7 +14,6 @@ internal class GameplayPhase : IGamePhase
     int player2Score = 0;
 
     Settings settings;
-    bool exitWindowRequested = false;
 
     public GameplayPhase(Settings settings)
     {
@@ -30,28 +28,28 @@ internal class GameplayPhase : IGamePhase
         );
     }
 
-    private Ball InitBall(ScreenBorder direction) => new(
+    private Ball InitBall(ScreenBorder direction)
+    {
+        var directionVector = direction == ScreenBorder.Left ? 1.0f : -1.0f;
+        
+        return new(
             settings.ScreenCenter,
-            initialBallSpeed: new Vector2(-5.0f, -4.0f)
+            initialBallSpeed: new Vector2(directionVector * 5.0f, -4.0f)
         );
+    }
 
     public void Draw()
     {
-        if (exitWindowRequested)
-        {
-            ExitWindow.Draw(settings.Width);
-        }
-        else
-        {
-            Raylib.ClearBackground(Color.RayWhite);
-            DrawCurrentScore();
+        Raylib.ClearBackground(Color.RayWhite);
+        DrawCurrentScore();
 
-            theBall.Draw();
-            player1Paddle.Draw();
-            player2Paddle.Draw();
+        theBall.Draw();
+        player1Paddle.Draw();
+        player2Paddle.Draw();
 
-            Raylib.DrawFPS(10, 10);
-        }
+#if DEBUG
+        Raylib.DrawFPS(5, 5);
+#endif
     }
 
     private void DrawCurrentScore()
@@ -66,45 +64,38 @@ internal class GameplayPhase : IGamePhase
 
     public void Update()
     {
-        if (Raylib.WindowShouldClose() || Raylib.IsKeyPressed(KeyboardKey.Escape))
-            exitWindowRequested = true;
-
-        if (exitWindowRequested)
+        if (Raylib.IsKeyPressed(KeyboardKey.Escape))
         {
-            if (Raylib.IsKeyPressed(KeyboardKey.Y)) Program.EndGame();
-            else if (Raylib.IsKeyPressed(KeyboardKey.N)) exitWindowRequested = false;
+            Program.CurrentScreen = GameScreen.TITLE;
+            Program.IsPaused = true;
+            return;
         }
-        else
-        {
-            (bool isColliding, ScreenBorder border) = theBall.IsCollidingWithScreenBorderX();
+
+        (bool isColliding, ScreenBorder border) = theBall.IsCollidingWithScreenBorderX();
             
-            if (isColliding)
-            {
-                if (border == ScreenBorder.Left)
-                {
-                    player2Score++;
-                    theBall = InitBall(ScreenBorder.Right);
-                }
-                else if (border == ScreenBorder.Right)
-                {
-                    player1Score++;
-                    theBall = InitBall(ScreenBorder.Left);
-                }
-            }
-
-            if (theBall.IsCollidingWithScreenBorderY())
-                theBall.InvertVerticalDirection();
-
-            if (theBall.IsCollidingWith(player1Paddle) || 
-                theBall.IsCollidingWith(player2Paddle))
-                theBall.InvertHorizontalDirection();
-
-            if (Raylib.IsKeyDown(KeyboardKey.W)) player1Paddle.MoveVertically(-5.0f);
-            if (Raylib.IsKeyDown(KeyboardKey.S)) player1Paddle.MoveVertically(5.0f);
-            if (Raylib.IsKeyDown(KeyboardKey.Up)) player2Paddle.MoveVertically(-5.0f);
-            if (Raylib.IsKeyDown(KeyboardKey.Down)) player2Paddle.MoveVertically(5.0f);
-
-            theBall.Update();
+        if (isColliding && border == ScreenBorder.Left)
+        {
+            player2Score++;
+            theBall = InitBall(ScreenBorder.Left);
         }
+        else if (isColliding && border == ScreenBorder.Right)
+        {
+            player1Score++;
+            theBall = InitBall(ScreenBorder.Right);
+        }
+
+        if (theBall.IsCollidingWithScreenBorderY())
+            theBall.InvertVerticalDirection();
+
+        if (theBall.IsCollidingWith(player1Paddle) || 
+            theBall.IsCollidingWith(player2Paddle))
+            theBall.InvertHorizontalDirection();
+
+        if (Raylib.IsKeyDown(KeyboardKey.W)) player1Paddle.MoveUp();
+        if (Raylib.IsKeyDown(KeyboardKey.S)) player1Paddle.MoveDown();
+        if (Raylib.IsKeyDown(KeyboardKey.Up)) player2Paddle.MoveUp();
+        if (Raylib.IsKeyDown(KeyboardKey.Down)) player2Paddle.MoveDown();
+
+        theBall.Update();
     }
 }
